@@ -18,6 +18,11 @@ namespace Condensight.Composition {
         public MonoBehaviour measurementSourceBehaviour; // IMeasurementSource
         public InstancedMeshRenderer particleRenderer;
 
+        [Header("Simulation")]
+        [Tooltip("Multiplier for simulated time. 1 = real-time, 0.1 = 10× slower, 2 = 2× faster, 0 = pause.")]
+        [Range(0f, 10f)]
+        public float simulationTimeScale = 1f;
+        
         private IMeasurementSource _source;
         private IParticleFilter _filter;
         private IRandom _rng;
@@ -42,11 +47,14 @@ namespace Condensight.Composition {
 
         void Update() {
             float now = Time.time;
-            float dt = Mathf.Max(1e-4f, now - _lastTime);
+            float dtReal = Mathf.Max(1e-4f, now - _lastTime);
             _lastTime = now;
 
+            float dt = dtReal * simulationTimeScale;
+            
             Vector2 z = _source != null ? _source.CurrentMeasurement() : Vector2.zero;
-
+            _filter.Update();
+            
             _filter.Predict(dt);
             _filter.Weight(z);
             _filter.Normalize();
