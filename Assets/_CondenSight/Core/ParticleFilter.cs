@@ -17,6 +17,11 @@ namespace Condensight.Core
             _motion = motion; _meas = meas; _resampler = resampler; _rng = rng;
         }
 
+        public void Update()
+        {
+            _meas.Update();
+        }
+
         public void Initialize(int count, System.Func<Particle> initFn) {
             _P = new Particle[count];
             for (int i = 0; i < count; i++) _P[i] = initFn();
